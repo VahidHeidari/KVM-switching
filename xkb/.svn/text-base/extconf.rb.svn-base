@@ -1,0 +1,7 @@
+# Generate make file for XKB interface Ruby extension
+# $Id$
+
+require 'mkmf'
+$libs = append_library($libs, "X11")
+$libs = append_library($libs, "stdc++")
+create_makefile('ruby-wmii/xkb');

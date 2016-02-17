@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+# xkbstate
+# Command-line tool to get keyboard layout information and change layouts.
+# Copyright (C) 2008 bu Jay Bromley <jbromley@gmail.com>
+# $Id$
+require 'optparse'
+require 'ruby-wmii/xkb'
+
+XKBSTATE_VERSION = 0.1
+
+xkb = Xkb::XKeyboard.new
+opts = OptionParser.new do |opts|
+  opts.banner = "Usage: xkbstate [action]"
+  
+  opts.separator ""
+  opts.separator "Actions:"
+  
+  # Get the current layout's symbol
+  opts.on("-s", "--symbol", "Return the symbol for the current layout") do
+    puts xkb.current_group_symbol
+    exit
+  end
+
+  # Get the current layout's full name
+  opts.on("-g", "--group", "Return the current layout's full name.") do
+    puts xkb.current_group_name
+    exit
+  end
+
+  # Get a list of symbols for all layouts
+  opts.on("-S", "--all-symbols", "Return a space-delimited list of all layouts' symbols") do
+    puts xkb.group_symbols
+    exit
+  end
+
+  # Get the list of all layout full names
+  opts.on("-G", "--all-groups", "Return a list of all layouts with one layout per line") do
+    puts xkb.group_names
+    exit
+  end
+  
+  # Set the layout to the next available one
+  opts.on("-n", "--next-group", "Set the group to the next group in the group order.") do
+    curr_group = xkb.current_group_num
+    curr_group += 1
+    xkb.set_group_by_num curr_group
+    exit
+  end
+
+  # Set the layout to the next available one
+  opts.on("-p", "--prev-group", "Set the group to the previous group") do
+    curr_group = xkb.current_group_num
+    curr_group -= 1
+    xkb.set_group_by_num curr_group
+    exit
+  end
+
+  # Set the layout by layout number
+  opts.on("-l", "--layout-num GROUP", "Set the group by its number") do | group_arg |
+    group_num = group_arg.to_i
+    groups = xkb.group_symbols
+    if group_num < 0 || group_num > groups.size - 1
+      STDERR << "'#{group_num}' is not a valid group number. Group numbers run from 0 to #{groups.size - 1}.\n"
+    else
+      xkb.set_group_by_num group_num
+    end
+    exit
+  end
+
+  # Set the layout by its symbol
+  opts.on("-L", "--layout-symbol SYMBOL", "Set the group by its symbol") do | group_sym |
+    symbols = xkb.group_symbols
+    group_num = symbols.index(group_sym)
+    if group_num != nil
+      xkb.set_group_by_num group_num
+    else
+      STDERR << "'#{group_sym}' is not a valid group symbol. Valid symbols are #{symbols.join(', ')}.\n"
+    end
+    exit
+  end
+
+  opts.separator ""
+  opts.separator "Common options:"
+  
+  # No argument, shows at tail.  This will puts an options summary.
+  # Try it and see!
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+  
+  # Another typical switch to puts the version.
+  opts.on_tail("--version", "Show version") do
+    puts "xkbstate version #{XKBSTATE_VERSION}"
+    exit
+  end
+
+end.parse!
+
+# All of the action is above. If we get here, it is because no arguments were entered.
+STDERR << "You must specify an action!\n"
+puts opts
+
+
+# Local Variables:
+# mode: ruby
+# End:

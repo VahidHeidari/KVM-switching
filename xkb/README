@@ -1,0 +1,46 @@
+RUBY-XKB for WMII
+by J. Bromley
+
+* Description
+
+Ruby-Xkb for WMII is a C++ Ruby extension that allows Ruby code to query
+and change the XKB layout state.
+
+XKeyboard.h    interface for a class that queries and sets XKB state (layouts)
+XKeyboard.cpp  implementation for XKB query/set class
+X11Exception.h C++ exception class
+XKeyboard.i    SWiG interface file for XKeyboard class (for Ruby)
+extconf.rb     configuration file for Ruby extension
+xkbstate       Ruby script to query/change XKB state (used with Ruby extension)
+README         this file
+Makefile_XKeyboard builds a shared library from the C++ class, historical only
+
+The C++ class has no special dependencies on anything outside of
+X-related libraries, so it can be easily used with other software.
+
+
+* Building
+
+To build the Ruby extension, do the following.
+
+ 1. Generate wrapper for C++ class: swig -c++ -ruby XKeyboard.i
+ 2. Generate Makefile for Ruby extension: ruby extconf.rb
+ 3. Build Ruby extension: make
+ 4. Install Ruby extension: sudo make install
+
+
+* Script
+
+xkbstate is a Ruby script that uses the Ruby extension to
+manipulate/query XKB layouts from the command line. It needs to be
+cleaned up a little bit, but it works. For more information, build and
+install the ruby extension as above and then run: xkbstate --help.
+
+
+* Bugs or Problems
+
+If you find any bugs please let me know at
+jbromley@gmail.com. Admittedly, I only really tested with a few
+different layouts that I used, so if you've got some odd layout or set
+of layouts there may be problems. Please let me know.
+
